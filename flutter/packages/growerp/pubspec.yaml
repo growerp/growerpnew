@@ -12,12 +12,10 @@ executables:
   csvToCsv:
 environment: 
   sdk: '>=3.2.6 <4.0.0'
-  flutter: '>=1.17.0'
 dependencies: 
   dcli: ^3.3.5
   dio: ^5.4.1
   fast_csv: ^0.2.6
-  get_it: ^7.6.4
   growerp_models: ^1.2.4
   hive: ^2.2.3
   logger: ^2.0.2+1

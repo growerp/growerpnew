@@ -128,6 +128,7 @@ Future<void> main(List<String> args) async {
         fileContent = File(fileInput).readAsStringSync();
       }
       if (fileInput.endsWith('.ods') || fileInput.endsWith('.xlsx')) {
+        // convert spreadsheet to csv
         var bytes = File(fileInput).readAsBytesSync();
         var decoder = SpreadsheetDecoder.decodeBytes(bytes);
         final buffer = StringBuffer();
@@ -135,7 +136,7 @@ Future<void> main(List<String> args) async {
           value.rows.forEach((row) {
             List<String> rows = [];
             row.forEach((element) {
-              rows.add(element == null ? '' : element.toString());
+              rows.add(element == null ? '' : '$element');
             });
             buffer.write(createCsvRow(rows, row.length));
           });
@@ -149,10 +150,10 @@ Future<void> main(List<String> args) async {
       inputCsvFile = fast_csv.parse(fileContent);
       for (final row in inputCsvFile) {
         if (++index % 10000 == 0) print("processing row: $index");
-        if (row == inputCsvFile.first) continue; // header line
+        if (fileInput.endsWith('.csv') && row == inputCsvFile.first)
+          continue; // header line
         List<String> convertedRow =
             convertCsvRow(fileType, row, fileInput, images, startDate);
-        // print("==old: $row new: $convertedRow");
         if (convertedRow.isNotEmpty) convertedRows.add(convertedRow);
       }
       logger.i(
@@ -228,6 +229,8 @@ Future<void> main(List<String> args) async {
             List<String> newRow = List.from(row);
             // replace by sequential number
             newRow[0] = (seqNumber++).toString();
+            print(
+                "==T=new row: ${newRow[0]} ${newRow[8]} ===oldrow: ${row[0]} ${row[8]}");
             headerRows.add(newRow);
           }
           lastRow = row;
@@ -259,6 +262,8 @@ Future<void> main(List<String> args) async {
           }
           List<String> newRow = List.from(row);
           newRow[0] = seqNumber.toString();
+          print(
+              "==I=new row: ${newRow[0]} ${newRow[8]} ===oldrow: ${row[0]} ${row[8]}");
           itemRows.add(newRow);
           lastRow = row;
         }
